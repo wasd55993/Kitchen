@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,7 @@ public class ClearCounter : BaseCounter
             if (plateInPlayer.AddIngredientsToPlate(GetKitchenObject().GetKitchenObjectSO()))
             { 
                 KitchenObjectPool.Instance.ReturnPool(GetKitchenObject().GetKitchenObjectSO(), GetKitchenObject());
-
+                this.ResetKitchenObject();
             }
         }
         else if (player.IsHaveKitchen() &&
@@ -37,7 +38,6 @@ public class ClearCounter : BaseCounter
             { 
                 KitchenObjectPool.Instance.ReturnPool(player.GetKitchenObject().GetKitchenObjectSO(), player.GetKitchenObject());
                 player.ResetKitchenObject();
-
             }
         }
     }

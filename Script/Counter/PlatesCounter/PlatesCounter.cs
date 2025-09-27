@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +7,23 @@ public class PlatesCounter : BaseCounter
 {
     [SerializeField] private KitchenObject plateObject;
 
-    private const int plateMaxCount = 5;//当前场景最大盘子数量]
-    private static int currentPlateCount = 1;
+    private const int plateMaxCount = 5;//当前场景最大盘子数量
+    private int currentPlateCount = 0;
 
     private List<KitchenObject> plates = new List<KitchenObject>();//柜台上盘子数量
+
+    public static PlatesCounter Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     public override void Interaction(PlayerControl player)
     {
@@ -25,11 +39,18 @@ public class PlatesCounter : BaseCounter
     }
 
 
-    private void Update()
+    protected override void Update()
     {
-        if (currentPlateCount < plateMaxCount)
+        base.Update();
+        if ((PhotonNetwork.IsConnected && photonView.IsMine) ||
+            !PhotonNetwork.IsConnected)
         {
-            CreatePlates();
+            Debug.Log(currentPlateCount);
+            if (currentPlateCount < plateMaxCount)
+            {
+                CreatePlates();
+                currentPlateCount++;
+            }
         }
     }
 
@@ -44,12 +65,12 @@ public class PlatesCounter : BaseCounter
             Quaternion.identity
             );
 
+        if (plateVisual == null) return;
+
         //添加盘子
         plates.Add(plateVisual);
         SetKitchenObject(plateVisual);
         plateVisual.transform.localPosition = Vector3.zero + Vector3.up * 0.1f * plates.Count;
-
-        currentPlateCount = plates.Count;
     }
 
     /// <summary>
@@ -76,6 +97,25 @@ public class PlatesCounter : BaseCounter
         for (int i = 0; i < plates.Count; i++)
         {
             plates[i].transform.localPosition = Vector3.zero + Vector3.up * 0.1f * (i+1);
+        }
+    }
+
+    public void SetCurrentPlateCount()
+    {
+        currentPlateCount--;
+    }
+
+    public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(plates.Count);
+        }
+        else
+        {
+            int platesNumber = (int)stream.ReceiveNext();
+
+            
         }
     }
 }

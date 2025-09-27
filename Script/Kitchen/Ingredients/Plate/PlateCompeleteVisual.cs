@@ -23,4 +23,11 @@ public class PlateCompeleteVisual : MonoBehaviour
             }
         }
     }
+    public void HideFoodObject()
+    {
+        foreach(var food in foodList) 
+        {
+            food.foodObject?.SetActive(false);
+        }
+    }
 }

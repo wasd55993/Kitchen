@@ -33,6 +33,11 @@ public class Plate : KitchenObject
         }
     }
 
+    public void HideKitchenObject()
+    {
+        plateCompeleteVisual.HideFoodObject();
+    }
+
     public List<KitchenObjectSO> GetIngredients()
     {
         return ingredients;

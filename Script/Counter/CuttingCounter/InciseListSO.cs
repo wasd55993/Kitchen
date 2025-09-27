@@ -19,6 +19,11 @@ public class InciseListSO : ScriptableObject
 
     public bool TryGetInciseOutput(KitchenObject input, out CuttingInformation cuttingInformation)
     {
+        if (input == null)
+        {
+            cuttingInformation = null;
+            return false;
+        }
         //判断该食材是否可以被切制，并返回找到或未找到
         foreach (CuttingInformation incise in inciseList)
         {
